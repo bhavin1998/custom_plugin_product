@@ -122,41 +122,104 @@ function misha_image_uploader_field( $name, $value = '') {
 /*
  * Add a meta box
  */
-add_action( 'admin_menu', 'misha_meta_box_add' );
+// add_action( 'admin_menu', 'misha_meta_box_add' );
 
-function misha_meta_box_add() {
-    add_meta_box('mishadiv', // meta box ID
-        'More settings', // meta box title
-        'misha_print_box', // callback function that prints the meta box HTML 
-        'my-product', // post type where to add it
-        'normal', // priority
-        'high' ); // position
+// function misha_meta_box_add() {
+//     add_meta_box('mishadiv', // meta box ID
+//         'More settings', // meta box title
+//         'misha_print_box', // callback function that prints the meta box HTML 
+//         'my-product', // post type where to add it
+//         'normal', // priority
+//         'high' ); // position
+// }
+
+// /*
+//  * Meta Box HTML
+//  */
+// function misha_print_box( $post ) {
+//     $meta_key = 'second_featured_img';
+//     echo misha_image_uploader_field( $meta_key, get_post_meta($post->ID, $meta_key, true) );
+// }
+
+// /*
+//  * Save Meta Box data
+//  */
+// add_action('save_post', 'misha_save');
+
+// function misha_save( $post_id ) {
+//     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) 
+//         return $post_id;
+
+//     $meta_key = 'second_featured_img';
+//     // $_POST[$meta_key] = '';
+
+//     update_post_meta( $post_id, $meta_key, $_POST[$meta_key] );
+
+//     // if you would like to attach the uploaded image to this post, uncomment the line:
+//     // wp_update_post( array( 'ID' => $_POST[$meta_key], 'post_parent' => $post_id ) );
+
+//     return $post_id;
+// }
+
+function product_add_custom_box() {
+    $screens = [ 'post', 'wporg_cpt' ];
+    foreach ( $screens as $screen ) {
+        add_meta_box(
+            'product_metabox_id',                 // Unique ID
+            'Upload product gallery image',      // Box title
+            'wporg_custom_box_html',  // Content callback, must be of type callable
+            $screen                            // Post type
+        );
+    }
 }
+add_action( 'add_meta_boxes', 'product_add_custom_box' );
 
-/*
- * Meta Box HTML
- */
-function misha_print_box( $post ) {
-    $meta_key = 'second_featured_img';
-    echo misha_image_uploader_field( $meta_key, get_post_meta($post->ID, $meta_key, true) );
-}
+function wporg_custom_box_html( $post ) {
+    ?>
+        <!-- <input type="file" name="my_file_upload[]" id="my_file_upload[]" multiple="multiple"> -->
+        <input type="button" class="button button-secondary upload-button" value="Upload Profile Picture" data-group="1">
+        <br/>
+        <div class="dspimgprev" id="imgpreview">
 
-/*
- * Save Meta Box data
- */
-add_action('save_post', 'misha_save');
+        </div>
+        <!-- <input type="text" name="profile_picture1" id="profile-picture1" value="'.$picture1.'"> -->
 
-function misha_save( $post_id ) {
-    if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE ) 
-        return $post_id;
+        <script type="text/javascript">
+            jQuery(document).ready( function($){
 
-    $meta_key = 'second_featured_img';
-    $_POST[$meta_key] = '';
+            var mediaUploader;
 
-    update_post_meta( $post_id, $meta_key, $_POST[$meta_key] );
+            $('.upload-button').on('click',function(e) {
+                e.preventDefault();
+                var buttonID = $(this).data('group');
 
-    // if you would like to attach the uploaded image to this post, uncomment the line:
-    // wp_update_post( array( 'ID' => $_POST[$meta_key], 'post_parent' => $post_id ) );
+                if( mediaUploader ){
+                    mediaUploader.open();
+                    return;
+                }
 
-    return $post_id;
+            mediaUploader = wp.media.frames.file_frame =wp.media({
+                title: 'Choose a Hotel Picture',
+                button: {
+                    text: 'Choose Picture'
+                },
+                multiple:true
+            });
+
+            mediaUploader.on('select', function(){
+                attachment = mediaUploader.state().get('selection').toJSON();
+                // console.log(attachment[0]['url']);
+                jQuery.each(attachment,function(i){
+                    var imgname = attachment[i]['url'];
+                    $('#imgpreview').append('<img src="'+imgname+'"/>');
+                    $('#imgpreview img').css({"width":"150px","height":"150px","margin-right":"10px"});
+                    
+                });
+                $('#profile-picture'+buttonID).val(attachment.url);
+                $('#profile-picture-preview'+buttonID).css('background-image','url(' + attachment.url + ')');
+            });
+            mediaUploader.open();
+            }); });
+        </script>
+        <?php
 }
