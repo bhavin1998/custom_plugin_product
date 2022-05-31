@@ -1,0 +1,10 @@
+.customprodgallery {
+    width: 150px;
+    height: 150px;
+    margin-right: 10px;
+}
+
+.product_gallery_image {
+    display: flex;
+    margin-top: 15px;
+}
