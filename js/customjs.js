@@ -4,9 +4,8 @@ jQuery(function($){
      */
     $('body').on('click', '.misha_upload_image_button', function(e){
         e.preventDefault();
-
             var button = $(this),
-                custom_uploader = wp.media({
+            custom_uploader = wp.media({
             title: 'Insert image',
             library : {
                 // uncomment the next line if you want to attach image to the current post
@@ -31,4 +30,20 @@ jQuery(function($){
         $(this).hide().prev().val('').prev().addClass('button').html('Upload image');
         return false;
     });
+
+    $('.main_product_image_contain').slick({
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        arrows: false,
+        fade: true,
+        asNavFor: '.product_gallery_image'
+      });
+    $('.product_gallery_image').slick({
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        asNavFor: '.main_product_image_contain',
+        dots: true,
+        centerMode: true,
+        focusOnSelect: true
+      });
 });

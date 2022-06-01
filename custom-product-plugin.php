@@ -6,6 +6,10 @@
  * Version:     1.0.0
  * Author:      Bhavin Gediya
  */
+ob_start();
+error_reporting(0);
+
+
 
 // die (plugin_dir_path( __FILE__ ) . 'single-my_product.php');
     add_action( 'init', 'custom_product_post_type', 0 );
@@ -246,3 +250,31 @@ function single_page_template($single_template) {
     return $single_template;
 }
 add_filter( 'single_template', 'single_page_template' );
+
+function add_my_custom_page() {
+    // ob_end_clean();
+    // Create post object
+    $my_post = array(
+      'post_title'    => wp_strip_all_tags( 'My Products Page' ),
+      'post_content'  => 'My custom page content',
+      'post_status'   => 'publish',
+      'post_author'   => 1,
+      'post_type'     => 'page',
+      // Assign page template
+      'page_template'  => 'custom_shop_page.php'
+    );
+
+    // Insert the post into the database
+    $create_product_id = wp_insert_post( $my_post );
+    update_option('custom_products_page',$create_product_id);
+}
+// ob_start();
+register_activation_hook(__FILE__, 'add_my_custom_page');
+
+function my_custom_page_remove() {
+    $create_post_id = get_option('custom_products_page');
+    if ($create_post_id) {
+		wp_delete_post($create_post_id,true);
+	}
+}
+register_deactivation_hook( __FILE__, 'my_custom_page_remove' ); 

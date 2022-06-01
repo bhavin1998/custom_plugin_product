@@ -3,8 +3,6 @@
 get_header();
 
 global $post;
-// echo "<pre>";
-// print_r($post);
 ?>
 <h2><?php echo $post->post_title; ?></h2>
 <?php
@@ -14,7 +12,9 @@ if (has_post_thumbnail( $post->ID ) ) {
         ?>
         <div>
                 <div class="main_product_image_contain">
-                        <img src="<?php echo $feat_image ?>" class="main_product_img" alt="">
+                        <div>
+                                <img src="<?php echo $feat_image ?>" class="main_product_img" alt="">
+                        </div>
                 </div>
                 <div class="product_gallery_image">
                         <?php
@@ -23,7 +23,9 @@ if (has_post_thumbnail( $post->ID ) ) {
                                 $new122 = unserialize($productgallery);
                                 $newwww = unserialize($new122);
                                 foreach ($newwww as $newgalleryimg){
+                                        echo "<div>";
                                         echo '<img src="'.$newgalleryimg.'" class="customprodgallery"/>';
+                                        echo "</div>";
                                 } 
                         ?>
                 </div>
